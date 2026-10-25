@@ -1,4 +1,4 @@
-// talbot: 16 pinged wavetable voices, each with a pinged resonant filter
+// talbot: 16 wavetable voices pinging resonant filters
 
 Engine_Talbot : CroneEngine {
   classvar numVoices = 16;
@@ -67,7 +67,7 @@ Engine_Talbot : CroneEngine {
           ping = 0, ring = 1.2, drive = 1.5,
           pan = 0;
 
-      var env, vel, freq, pos, sig, res, cut, coef,
+      var env, vel, freq, pos, sig, res, tau, cut, coef,
           t1, t2, t3, t4, taps, idx, lo, frac;
 
       // One shot per trigger. Retriggering heads to the peak from wherever
@@ -80,11 +80,17 @@ Engine_Talbot : CroneEngine {
       pos = (Lag.kr(wave, 0.05) + (morph * env)).clip(0, wavesPerBank);
       sig = VOsc.ar(bufOffset + pos, freq) * env;
 
-      // Filter pinging: a one-sample strike rings a resonator tuned to the
-      // note, and ring sets the time to die away by 60 dB. The ring is its
-      // own envelope, so release does not cut it short. drive saturates it
-      // for the overtones a self-oscillating analog filter adds.
-      res = Ringz.ar(T2A.ar(t_trig), freq, ring);
+      // Filter pinging: the enveloped wavetable strikes a resonator tuned to
+      // the note, and ring sets the time to die away by 60 dB. 13.8 / (ring *
+      // sr) is unity gain at the note, and 1.5 makes up for the harmonics the
+      // ring drops. A short burst builds less ring than a long one, so the
+      // gain also makes up for the burst's length (about atk / 2 + 0.23 *
+      // rel for this envelope) against the ring's time constant. drive
+      // saturates the ring for the overtones a self-oscillating analog
+      // filter adds.
+      tau = ring / 6.91;
+      res = Ringz.ar(sig, freq, ring, 1.5 * 13.8 * SampleDur.ir / ring)
+        / (1 - exp(((atk * 0.5) + (rel * 0.23)).neg / tau)).max(0.001);
       res = (res * drive).tanh / drive.tanh;
       sig = (sig * (1 - ping)) + (res * ping);
 

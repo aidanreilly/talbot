@@ -61,7 +61,8 @@ These are the global params that shape the waves.
 * `wander` is how far `spread` drifts either side of its set value, as a percentage. `wander cycle`, in the params menu, sets how many swings of column 1 one full wander takes, for example 64. At 0 `spread` stays put.
 * `motion` sets the swing shape. `pendulum` eases in and out at the top and bottom like a real pendulum. `bounce` moves at constant speed. `rise` climbs from bottom to top and snaps back, like a ramp.
 
-The pattern always realigns at the bottom of the swing, which is where the heads start. In `pendulum` and `bounce` the realigned notes reach the top a moment apart, so the reunion sounds as a fast strum. In `rise` the top and the bottom are the same instant, so the reunion lands as one chord.
+With `phase`, `drift`, and `wander` at 0 and a `linear` or `centre` curve, the pattern realigns at the bottom every `100 / spread` swings of column 1, for example every 16 swings at 6.25%. Awkward values stretch that out: at 6.3% it takes 1000 swings. The `exp` curve only comes close, and `scatter` never realigns. Grabbing or nudging a head knocks its column out of step until you drop all the heads again.
+In `pendulum` and `bounce` the realigned notes reach the top a moment apart, so the reunion sounds as a fast strum. In `rise` the top and the bottom are the same instant, so the reunion lands as one chord.
 
 ### Note params
 
@@ -74,8 +75,8 @@ The pattern always realigns at the bottom of the swing, which is where the heads
 * `morph` shifts the wave position on each strike and lets it settle back as the note decays.
 * `cutoff`, `filter env`, and `slope` set the low-pass filter. `filter env` opens the cutoff by that many octaves on the strike.
 * `attack` and `release` set the envelope. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
-* `ping` blends each voice from the wavetable (0) to a pinged resonant filter (1). Every strike sends a one-sample pulse into a resonator tuned to the column's note, so it rings like a [pinged filter](https://www.perfectcircuit.com/signal/modular-synthesizer-filter-pinging) in a modular patch. The low-pass filter still shapes the ring, so a low `cutoff` with a positive `filter env` gives a plucked, gated sound.
-* `ring` is how long the resonator takes to die away by 60 dB, for example 1.2 s. The ring is its own envelope, so `attack` and `release` only shape the wavetable side.
+* `ping` blends each voice from the plain wavetable (0) to the wavetable run through a pinged resonant filter (1). The strike's wavetable burst excites a resonator tuned to the column's note, so it rings like a [pinged filter](https://www.perfectcircuit.com/signal/modular-synthesizer-filter-pinging) in a modular patch. `attack` and `release` set the length of the burst. A short `release`, for example 20 ms, pings it like a trigger pulse. A longer one drives it like audio fed into the filter. The low-pass filter still shapes the result, so a low `cutoff` with a positive `filter env` gives a plucked, gated sound.
+* `ring` is how long the resonator takes to die away by 60 dB, for example 1.2 s. The ring carries on after the wavetable burst has ended.
 * `drive`, in the params menu, saturates the ring. At 1 it is a pure sine. Higher values add the overtones of a filter pushed into self-oscillation.
 * `pan spread` spreads the columns across the stereo field, left to right.
 * `level` sets the output level.
