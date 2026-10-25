@@ -1,0 +1,21 @@
+# planning and design docs, local only
+docs/
+PLAN.md
+NOTES.md
+TODO.md
+*.plan.md
+*.design.md
+.superpowers/
+.pytest_cache
+
+# test harnesses and scratch work, local only
+test/
+tests/
+scratch/
+tmp/
+*.log
+
+# editor and tooling
+.project
+.claude/
+.DS_Store
