@@ -1,6 +1,6 @@
 # talbot
 
-> **[Talbot effect](https://en.wikipedia.org/wiki/Talbot_effect)** /ˈtɔːlbət ɪˈfɛkt/ *n.* (*physics*) A diffraction effect in which a plane wave passing through a periodic grating forms images of the grating again at regular distances behind it. [After William Henry Fox Talbot, who first observed it in 1836.]
+> **[Talbot effect](https://en.wikipedia.org/wiki/Talbot_effect)** /ˈtɔːlbət ɪˈfɛkt/ *n.* (*physics*) A diffraction effect in which a plane wave passing through a periodic grating forms images of the grating again at regular distances behind it.
 
 talbot is a 16 note pendulum arpeggiator and wavetable synth for [monome norns](https://monome.org/docs/norns/) and a monome grid 128.
 
