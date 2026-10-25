@@ -6,7 +6,7 @@ talbot is a 16 note pendulum arpeggiator and wavetable synth for [monome norns](
 
 16 pendulums, each swinging a little faster than the one before, behaving like a Talbot effect in time instead of space.
 
-talbot uses the same ROM banks as [wavetables](https://github.com/aidanreilly/wavetables), and runs them through a pinged resonant filter and a variable slope low-pass filter.
+talbot uses the same ROM banks as [wavetables](https://github.com/aidanreilly/wavetables), and runs them through a resonant low-pass filter with an AD envelope.
 
 ## Install
 
@@ -75,11 +75,8 @@ In `pendulum` and `bounce` the realigned notes reach the top a moment apart, so 
 
 * `bank` and `wave` select the wavetable. `wave spread` fans the wave position across the columns, so column 16 sits up to 64 waves away from column 1.
 * `morph` shifts the wave position on each strike and lets it settle back as the note decays.
-* `cutoff`, `filter env`, and `slope` set the low-pass filter. `filter env` opens the cutoff by that many octaves on the strike.
-* `attack` and `release` set the envelope. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
-* `ping` blends each voice from the plain wavetable (0) to the wavetable run through a pinged resonant filter (1). The strike's wavetable burst excites a resonator tuned to the column's note, so it rings like a [pinged filter](https://www.perfectcircuit.com/signal/modular-synthesizer-filter-pinging) in a modular patch. `attack` and `release` set the length of the burst. A short `release`, for example 20 ms, pings it like a trigger pulse. A longer one drives it like audio fed into the filter. The low-pass filter still shapes the result, so a low `cutoff` with a positive `filter env` gives a plucked, gated sound.
-* `ring` is how long the resonator takes to die away by 60 dB, for example 1.2 s. The ring carries on after the wavetable burst has ended. The resonator is three peaks spread a few cents around the note, so the ring beats slowly like an analog filter instead of sounding a pure tone.
-* `drive`, in the params menu, saturates the ring. At 1 it is a pure sine. Higher values add the overtones of a filter pushed into self-oscillation.
+* `attack` and `decay` set the AD envelope, which shapes both the level and the filter. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
+* `cutoff`, `filter env`, and `resonance` set the 4-pole low-pass filter. `filter env` opens the cutoff by that many octaves at the envelope's peak, so a low `cutoff` with a positive `filter env` gives a plucked sound. At 1 `resonance` sits just below self-oscillation.
 * `pan spread` spreads the columns across the stereo field, left to right.
 * `level` sets the output level.
 

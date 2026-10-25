@@ -1,4 +1,4 @@
-// talbot: 16 wavetable voices pinging resonant filters
+// talbot: 16 wavetable voices through an AD-enveloped low-pass
 
 Engine_Talbot : CroneEngine {
   classvar numVoices = 16;
@@ -62,56 +62,29 @@ Engine_Talbot : CroneEngine {
       arg out = 0, bufOffset = 0,
           hz = 220, wave = 0, morph = 0,
           t_trig = 0, amp = 1,
-          atk = 0.004, rel = 0.6,
-          cutoff = 4000, envCut = 2, slope = 2,
-          ping = 0, ring = 1.2, drive = 1.5,
+          atk = 0.005, dec = 0.6,
+          cutoff = 800, envCut = 3, res = 0.2,
           pan = 0;
 
-      var env, vel, freq, pos, sig, res, tau, cut, coef,
-          t1, t2, t3, t4, taps, idx, lo, frac;
+      var env, vel, freq, pos, sig, cut;
 
-      // One shot per trigger. Retriggering heads to the peak from wherever
-      // the envelope is, never from zero.
-      env = EnvGen.kr(Env([0, 1, 0], [atk, rel], [0, -4]), t_trig);
+      // One AD shot per trigger, shared by the amp and the filter.
+      // Retriggering heads to the peak from wherever the envelope is, never
+      // from zero.
+      env = EnvGen.kr(Env([0, 1, 0], [atk, dec], [0, -4]), t_trig);
       vel = Latch.kr(amp, t_trig);
       freq = Lag.kr(hz, 0.005);
 
       // morph sweeps the wave on the strike and lets it settle back
       pos = (Lag.kr(wave, 0.05) + (morph * env)).clip(0, wavesPerBank);
-      sig = VOsc.ar(bufOffset + pos, freq) * env;
+      sig = VOsc.ar(bufOffset + pos, freq);
 
-      // Filter pinging: the enveloped wavetable strikes a resonator tuned to
-      // the note, and ring sets the time to die away by 60 dB. 13.8 / (ring *
-      // sr) is unity gain at the note, and 1.5 makes up for the harmonics the
-      // ring drops. A short burst builds less ring than a long one, so the
-      // gain also makes up for the burst's length (about atk / 2 + 0.23 *
-      // rel for this envelope) against the ring's time constant. drive
-      // saturates the ring for the overtones a self-oscillating analog
-      // filter adds. One resonator makes a peak only 1 / (pi * ring) Hz
-      // wide, so three spread 7 cents around the note widen it, with the
-      // centre weighted double so a long burst at the note still builds.
-      tau = ring / 6.91;
-      res = (Ringz.ar(sig, freq * (2 ** ([-7, 0, 7] / 1200)), ring,
-        1.5 * 13.8 * SampleDur.ir / ring) * [0.25, 0.5, 0.25]).sum
-        / (1 - exp(((atk * 0.5) + (rel * 0.23)).neg / tau)).max(0.001);
-      res = (res * drive).tanh / drive.tanh;
-      sig = (sig * (1 - ping)) + (res * ping);
-
-      // the filter opens envCut octaves on the strike
+      // 4-pole low-pass that opens envCut octaves on the strike. A res of 1
+      // sits just below self-oscillation.
       cut = (cutoff * (2 ** (envCut * env))).clip(20, 18000);
-      coef = exp(-2pi * cut * SampleDur.ir).clip(0, 0.9999);
-      t1 = OnePole.ar(sig, coef);
-      t2 = OnePole.ar(t1, coef);
-      t3 = OnePole.ar(t2, coef);
-      t4 = OnePole.ar(t3, coef);
-      taps = [t1, t2, t3, t4];
-      idx = slope.clip(0, 3);
-      lo = idx.floor;
-      frac = idx - lo;
-      sig = (Select.ar(lo, taps) * (1 - frac))
-        + (Select.ar((lo + 1).min(3), taps) * frac);
+      sig = MoogFF.ar(sig, cut, res.clip(0, 1) * 3.6);
 
-      Out.ar(out, Pan2.ar(LeakDC.ar(sig) * vel,
+      Out.ar(out, Pan2.ar(LeakDC.ar(sig) * env * vel,
         Lag.kr(pan, 0.05)));
     }).add;
 
@@ -157,9 +130,8 @@ Engine_Talbot : CroneEngine {
 
     // global, written to every voice
     [
-      [\attack, \atk], [\release, \rel], [\morph, \morph],
-      [\cutoff, \cutoff], [\env_cut, \envCut], [\slope, \slope],
-      [\ping, \ping], [\ring, \ring], [\drive, \drive]
+      [\attack, \atk], [\decay, \dec], [\morph, \morph],
+      [\cutoff, \cutoff], [\env_cut, \envCut], [\resonance, \res]
     ].do({ arg pair;
       var argName = pair[1];
       this.addCommand(pair[0], "f", { arg msg;

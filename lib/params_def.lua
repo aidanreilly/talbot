@@ -170,38 +170,26 @@ function P.add_all()
     controlspec.new(-32, 32, "lin", 0.1, 6, ""))
   params:set_action("morph", function(x) engine.morph(x) end)
 
+  -- one AD envelope drives both the amp and the filter
   params:add_control("attack", "attack",
-    controlspec.new(0.001, 2, "exp", 0, 0.004, "s"))
+    controlspec.new(0.001, 2, "exp", 0, 0.005, "s"))
   params:set_action("attack", function(x) engine.attack(x) end)
 
-  params:add_control("release", "release",
-    controlspec.new(0.02, 8, "exp", 0, 0.8, "s"))
-  params:set_action("release", function(x) engine.release(x) end)
+  params:add_control("decay", "decay",
+    controlspec.new(0.02, 8, "exp", 0, 0.6, "s"))
+  params:set_action("decay", function(x) engine.decay(x) end)
 
   params:add_control("cutoff", "cutoff",
-    controlspec.new(40, 18000, "exp", 0, 1200, "hz"))
+    controlspec.new(40, 18000, "exp", 0, 800, "hz"))
   params:set_action("cutoff", function(x) engine.cutoff(x) end)
 
   params:add_control("env_cut", "filter env",
-    controlspec.new(-4, 6, "lin", 0.05, 2.5, "oct"))
+    controlspec.new(-4, 6, "lin", 0.05, 3, "oct"))
   params:set_action("env_cut", function(x) engine.env_cut(x) end)
 
-  params:add_control("slope", "slope",
-    controlspec.new(0, 3, "lin", 0.05, 2, ""))
-  params:set_action("slope", function(x) engine.slope(x) end)
-
-  -- the pinged resonant filter, blended in against the wavetable
-  params:add_control("ping", "ping",
-    controlspec.new(0, 1, "lin", 0.01, 0, ""))
-  params:set_action("ping", function(x) engine.ping(x) end)
-
-  params:add_control("ring", "ring",
-    controlspec.new(0.02, 10, "exp", 0, 1.2, "s"))
-  params:set_action("ring", function(x) engine.ring(x) end)
-
-  params:add_control("drive", "drive",
-    controlspec.new(1, 10, "exp", 0, 1.5, ""))
-  params:set_action("drive", function(x) engine.drive(x) end)
+  params:add_control("resonance", "resonance",
+    controlspec.new(0, 1, "lin", 0.01, 0.2, ""))
+  params:set_action("resonance", function(x) engine.resonance(x) end)
 
   params:add_control("pan_spread", "pan spread",
     controlspec.new(0, 1, "lin", 0.01, 0.6, ""))
