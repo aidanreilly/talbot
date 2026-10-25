@@ -24,6 +24,7 @@ ui.ROWS = {
   { left = { "wspr:", "wave_spread" }, right = { "mrph:", "morph" } },
   { left = { "cutf:", "cutoff" }, right = { "fenv:", "env_cut" } },
   { left = { "atk:", "attack" },  right = { "rel:", "release" } },
+  { left = { "ping:", "ping" },   right = { "ring:", "ring" } },
 }
 
 local function secs(v)
@@ -67,6 +68,8 @@ local RENDER = {
   env_cut = signed,
   attack = secs,
   release = secs,
+  ping = function(v) return string.format("%.2f", v) end,
+  ring = secs,
 }
 
 function ui.row_count()

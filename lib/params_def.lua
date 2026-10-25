@@ -190,6 +190,19 @@ function P.add_all()
     controlspec.new(0, 3, "lin", 0.05, 2, ""))
   params:set_action("slope", function(x) engine.slope(x) end)
 
+  -- the pinged resonant filter, blended in against the wavetable
+  params:add_control("ping", "ping",
+    controlspec.new(0, 1, "lin", 0.01, 0, ""))
+  params:set_action("ping", function(x) engine.ping(x) end)
+
+  params:add_control("ring", "ring",
+    controlspec.new(0.02, 10, "exp", 0, 1.2, "s"))
+  params:set_action("ring", function(x) engine.ring(x) end)
+
+  params:add_control("drive", "drive",
+    controlspec.new(1, 10, "exp", 0, 1.5, ""))
+  params:set_action("drive", function(x) engine.drive(x) end)
+
   params:add_control("pan_spread", "pan spread",
     controlspec.new(0, 1, "lin", 0.01, 0.6, ""))
   params:set_action("pan_spread", function() P.send_pans() end)

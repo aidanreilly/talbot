@@ -1,4 +1,4 @@
-// talbot: 16 pinged wavetable voices
+// talbot: 16 pinged wavetable voices, each with a pinged resonant filter
 
 Engine_Talbot : CroneEngine {
   classvar numVoices = 16;
@@ -64,17 +64,29 @@ Engine_Talbot : CroneEngine {
           t_trig = 0, amp = 1,
           atk = 0.004, rel = 0.6,
           cutoff = 4000, envCut = 2, slope = 2,
+          ping = 0, ring = 1.2, drive = 1.5,
           pan = 0;
 
-      var env, pos, sig, cut, coef, t1, t2, t3, t4, taps, idx, lo, frac;
+      var env, vel, freq, pos, sig, res, cut, coef,
+          t1, t2, t3, t4, taps, idx, lo, frac;
 
       // One shot per trigger. Retriggering heads to the peak from wherever
       // the envelope is, never from zero.
       env = EnvGen.kr(Env([0, 1, 0], [atk, rel], [0, -4]), t_trig);
+      vel = Latch.kr(amp, t_trig);
+      freq = Lag.kr(hz, 0.005);
 
       // morph sweeps the wave on the strike and lets it settle back
       pos = (Lag.kr(wave, 0.05) + (morph * env)).clip(0, wavesPerBank);
-      sig = VOsc.ar(bufOffset + pos, Lag.kr(hz, 0.005));
+      sig = VOsc.ar(bufOffset + pos, freq) * env;
+
+      // Filter pinging: a one-sample strike rings a resonator tuned to the
+      // note, and ring sets the time to die away by 60 dB. The ring is its
+      // own envelope, so release does not cut it short. drive saturates it
+      // for the overtones a self-oscillating analog filter adds.
+      res = Ringz.ar(T2A.ar(t_trig), freq, ring);
+      res = (res * drive).tanh / drive.tanh;
+      sig = (sig * (1 - ping)) + (res * ping);
 
       // the filter opens envCut octaves on the strike
       cut = (cutoff * (2 ** (envCut * env))).clip(20, 18000);
@@ -90,7 +102,7 @@ Engine_Talbot : CroneEngine {
       sig = (Select.ar(lo, taps) * (1 - frac))
         + (Select.ar((lo + 1).min(3), taps) * frac);
 
-      Out.ar(out, Pan2.ar(LeakDC.ar(sig) * env * Latch.kr(amp, t_trig),
+      Out.ar(out, Pan2.ar(LeakDC.ar(sig) * vel,
         Lag.kr(pan, 0.05)));
     }).add;
 
@@ -137,7 +149,8 @@ Engine_Talbot : CroneEngine {
     // global, written to every voice
     [
       [\attack, \atk], [\release, \rel], [\morph, \morph],
-      [\cutoff, \cutoff], [\env_cut, \envCut], [\slope, \slope]
+      [\cutoff, \cutoff], [\env_cut, \envCut], [\slope, \slope],
+      [\ping, \ping], [\ring, \ring], [\drive, \drive]
     ].do({ arg pair;
       var argName = pair[1];
       this.addCommand(pair[0], "f", { arg msg;

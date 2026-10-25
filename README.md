@@ -22,7 +22,7 @@ If you installed this script under an earlier name, delete the `~/dust/code/pend
 
 | Control | Action |
 | --- | --- |
-| `E1` | select row, scrolling for rows 7 and 8 |
+| `E1` | select row, scrolling for rows 7 to 9 |
 | `E2` | edit left param |
 | `E3` | edit right param |
 | `K2` | to the play page |
@@ -49,8 +49,6 @@ Letting go of `K3` releases the head, and it carries on swinging from where you 
 * Hold any other row to grab that column's head and pin it there. Let go and it carries on rising from where you held it. Grabbing a few heads at different heights is the quickest way to bend the wave by hand.
 * Pressing the top row strikes the note straight away, and holds the head at the top until you let go.
 
-A 16x16 grid also works. The pendulums get twice the height.
-
 ### Motion params
 
 These are the global params that shape the waves.
@@ -76,6 +74,9 @@ The pattern always realigns at the bottom of the swing, which is where the heads
 * `morph` shifts the wave position on each strike and lets it settle back as the note decays.
 * `cutoff`, `filter env`, and `slope` set the low-pass filter. `filter env` opens the cutoff by that many octaves on the strike.
 * `attack` and `release` set the envelope. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
+* `ping` blends each voice from the wavetable (0) to a pinged resonant filter (1). Every strike sends a one-sample pulse into a resonator tuned to the column's note, so it rings like a [pinged filter](https://www.perfectcircuit.com/signal/modular-synthesizer-filter-pinging) in a modular patch. The low-pass filter still shapes the ring, so a low `cutoff` with a positive `filter env` gives a plucked, gated sound.
+* `ring` is how long the resonator takes to die away by 60 dB, for example 1.2 s. The ring is its own envelope, so `attack` and `release` only shape the wavetable side.
+* `drive`, in the params menu, saturates the ring. At 1 it is a pure sine. Higher values add the overtones of a filter pushed into self-oscillation.
 * `pan spread` spreads the columns across the stereo field, left to right.
 * `level` sets the output level.
 
