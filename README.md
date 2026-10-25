@@ -76,7 +76,7 @@ In `pendulum` and `bounce` the realigned notes reach the top a moment apart, so 
 * `bank` and `wave` select the wavetable. `wave spread` fans the wave position across the columns, so column 16 sits up to 64 waves away from column 1.
 * `morph` shifts the wave position on each strike and lets it settle back as the note decays.
 * `attack` and `decay` set the AD envelope, which shapes both the level and the filter. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
-* `cutoff`, `filter env`, and `resonance` set the 4-pole low-pass filter. `filter env` opens the cutoff by that many octaves at the envelope's peak, so a low `cutoff` with a positive `filter env` gives a plucked sound. At 1 `resonance` sits just below self-oscillation.
+* `cutoff`, `filter env`, and `resonance` set the 4-pole low-pass filter. `filter env` opens the cutoff by that many octaves at the envelope's peak, so a low `cutoff` with a positive `filter env` gives a plucked sound. At 1 `resonance` gives a sharp peak at the cutoff without self-oscillating.
 * `pan spread` spreads the columns across the stereo field, left to right.
 * `level` sets the output level.
 

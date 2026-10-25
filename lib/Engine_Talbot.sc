@@ -66,31 +66,37 @@ Engine_Talbot : CroneEngine {
           cutoff = 800, envCut = 3, res = 0.2,
           pan = 0;
 
-      var env, vel, freq, pos, sig, cut;
+      var env, vel, freq, pos, sig, cut, rq;
 
-      // One AD shot per trigger, shared by the amp and the filter.
-      // Retriggering heads to the peak from wherever the envelope is, never
-      // from zero.
-      env = EnvGen.kr(Env([0, 1, 0], [atk, dec], [0, -4]), t_trig);
+      // One AD shot per trigger, shared by the amp and the filter. It runs
+      // at audio rate so a fast attack sweeps the cutoff smoothly instead of
+      // in 64-sample steps. Retriggering heads to the peak from wherever the
+      // envelope is, never from zero.
+      env = EnvGen.ar(Env([0, 1, 0], [atk, dec], [0, -4]), t_trig);
       vel = Latch.kr(amp, t_trig);
       freq = Lag.kr(hz, 0.005);
 
       // morph sweeps the wave on the strike and lets it settle back
-      pos = (Lag.kr(wave, 0.05) + (morph * env)).clip(0, wavesPerBank);
+      pos = (Lag.kr(wave, 0.05) + (morph * A2K.kr(env))).clip(0, wavesPerBank);
       sig = VOsc.ar(bufOffset + pos, freq);
 
-      // 4-pole low-pass that opens envCut octaves on the strike. A res of 1
-      // sits just below self-oscillation.
+      // 4-pole low-pass that opens envCut octaves on the strike: a resonant
+      // 2-pole into a plain 2-pole, both following the cutoff at audio rate.
+      // res takes rq from 1 down to 0.1, and the input drops by sqrt(rq) so
+      // the resonant peak gains no more than about 10 dB.
       cut = (cutoff * (2 ** (envCut * env))).clip(20, 18000);
-      sig = MoogFF.ar(sig, cut, res.clip(0, 1) * 3.6);
+      rq = 0.1 ** res.clip(0, 1);
+      sig = LPF.ar(RLPF.ar(sig * rq.sqrt, cut, rq), cut);
 
       Out.ar(out, Pan2.ar(LeakDC.ar(sig) * env * vel,
         Lag.kr(pan, 0.05)));
     }).add;
 
-    // 16 voices peaking together at a drop need headroom before the limiter
+    // 16 voices peaking together at a drop need headroom before the
+    // limiter. At 0.2 a full drop at the default level only goes over by a
+    // few dB, so the limiter catches peaks instead of squashing every cycle.
     SynthDef(\talbotOut, { arg in = 0, out = 0, level = 0.5;
-      var sig = In.ar(in, 2) * Lag.kr(level, 0.05) * 0.4;
+      var sig = In.ar(in, 2) * Lag.kr(level, 0.05) * 0.2;
       Out.ar(out, Limiter.ar(sig, 0.98, 0.01));
     }).add;
 
