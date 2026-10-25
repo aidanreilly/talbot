@@ -5,14 +5,12 @@ local ui = {}
 local LABEL_X, VALUE_X = 0, 24
 local LABEL2_X, VALUE2_X = 62, 89
 local ROW_Y = { 5, 12, 19, 26, 33, 40 }
--- key legend, between the param rows and the heads
-local LEGEND_Y = 47
 
 -- 16 small heads below the param rows, one per column
 local HEAD_X0, HEAD_DX = 34, 6
 local HEAD_TOP, HEAD_BOT = 52, 63
 
--- six rows fit above the legend; E1 scrolls the rest into view
+-- six rows fit above the heads; E1 scrolls the rest into view
 local VISIBLE = #ROW_Y
 
 ui.ROWS = {
@@ -114,11 +112,6 @@ function ui.redraw(state)
   if top > 1 then screen.pixel(127, 1) end
   if top + VISIBLE - 1 < #ui.ROWS then screen.pixel(127, 41) end
   screen.fill()
-
-  screen.level(3)
-  screen.move(LABEL_X, LEGEND_Y)
-  screen.text("K2:play K3:" .. (state.running and "stop" or "run")
-    .. " hold:drop")
 
   screen.level(state.running and 15 or 3)
   screen.move(LABEL_X, 62)
