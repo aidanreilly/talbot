@@ -87,9 +87,12 @@ Engine_Talbot : CroneEngine {
       // gain also makes up for the burst's length (about atk / 2 + 0.23 *
       // rel for this envelope) against the ring's time constant. drive
       // saturates the ring for the overtones a self-oscillating analog
-      // filter adds.
+      // filter adds. One resonator makes a peak only 1 / (pi * ring) Hz
+      // wide, so three spread 7 cents around the note widen it, with the
+      // centre weighted double so a long burst at the note still builds.
       tau = ring / 6.91;
-      res = Ringz.ar(sig, freq, ring, 1.5 * 13.8 * SampleDur.ir / ring)
+      res = (Ringz.ar(sig, freq * (2 ** ([-7, 0, 7] / 1200)), ring,
+        1.5 * 13.8 * SampleDur.ir / ring) * [0.25, 0.5, 0.25]).sum
         / (1 - exp(((atk * 0.5) + (rel * 0.23)).neg / tau)).max(0.001);
       res = (res * drive).tanh / drive.tanh;
       sig = (sig * (1 - ping)) + (res * ping);
