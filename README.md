@@ -4,7 +4,9 @@
 
 talbot is a 16 note pendulum arpeggiator and wavetable synth for [monome norns](https://monome.org/docs/norns/) and a monome grid 128.
 
-talbot uses the same ROM banks as [wavetables](https://github.com/aidanreilly/wavetables), through a variable slope low-pass filter.
+16 pendulums, each swinging a little faster than the one before, behaving like a Talbot effect in time instead of space.
+
+talbot uses the same ROM banks as [wavetables](https://github.com/aidanreilly/wavetables), and runs them through a pinged resonant filter and a variable slope low-pass filter.
 
 ## Install
 
