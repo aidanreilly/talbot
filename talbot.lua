@@ -156,12 +156,12 @@ local function grid_redraw()
         g:led(i, 1, math.floor(4 + flash[i] * 11))
       end
     else
-      g:led(i, grid_rows, 2)
+      g:led(i, grid_rows, 1)
     end
 
     local lv
     if sw.held[i] then lv = 15
-    elseif muted then lv = 4
+    elseif muted then lv = 1
     else lv = 10 end
     g:led(i, r, lv)
 
