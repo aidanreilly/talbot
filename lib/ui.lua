@@ -14,8 +14,8 @@ local HEAD_TOP, HEAD_BOT = 52, 63
 local VISIBLE = #ROW_Y
 
 ui.ROWS = {
-  { left = { "per:", "period" },  right = { "sprd:", "spread" } },
-  { left = { "curv:", "curve" },  right = { "phs:", "phase" } },
+  { left = { "perd:", "period" }, right = { "sprd:", "spread" } },
+  { left = { "curv:", "curve" },  right = { "phas:", "phase" } },
   { left = { "drft:", "drift" },  right = { "wndr:", "wander" } },
   { left = { "motn:", "motion" }, right = { "ordr:", "order" } },
   { left = { "bank:", "bank" },   right = { "wave:", "wave" } },
