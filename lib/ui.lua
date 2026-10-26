@@ -66,14 +66,26 @@ function ui.row_count()
   return #ui.ROWS
 end
 
--- live holds values that move on their own, shown in place of the param
+-- midi and crow set the tempo from outside, so editing it does nothing
+local function external(id)
+  if id ~= "clock_tempo" then return false end
+  local src = params:string("clock_source")
+  return src == "midi" or src == "crow"
+end
+
+-- live holds values that move on their own, shown in place of the param.
+-- A value set from outside is greyed out.
 local function draw_cell(lx, vx, y, label, id, lit, live)
   local v = live[id]
   if v == nil then v = params:get(id) end
   screen.level(2)
   screen.move(lx, y)
   screen.text(label)
-  screen.level(lit and 15 or 5)
+  if external(id) then
+    screen.level(lit and 4 or 2)
+  else
+    screen.level(lit and 15 or 5)
+  end
   screen.move(vx, y)
   screen.text(RENDER[id](v))
 end
