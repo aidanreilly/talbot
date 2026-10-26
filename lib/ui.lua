@@ -23,7 +23,6 @@ ui.ROWS = {
   { left = { "cutf:", "cutoff" }, right = { "fenv:", "env_cut" } },
   { left = { "atk:", "attack" },  right = { "dec:", "decay" } },
   { left = { "res:", "resonance" }, right = { "lvl:", "level" } },
-  { left = { "clk:", "clock_source" }, right = { "pan:", "pan_spread" } },
 }
 
 local function secs(v)
@@ -38,7 +37,6 @@ end
 local RENDER = {
   -- the norns clock's own params; the tempo reads whatever the source sets
   clock_tempo = function() return string.format("%.0f", clock.get_tempo()) end,
-  clock_source = function() return params:string("clock_source") end,
   spread = function(v) return string.format("%.2f%%", v) end,
   curve = function() return params:string("curve") end,
   phase = function(v) return string.format("%.2f", v) end,
@@ -59,7 +57,6 @@ local RENDER = {
   decay = secs,
   resonance = function(v) return string.format("%.2f", v) end,
   level = function(v) return string.format("%.2f", v) end,
-  pan_spread = function(v) return string.format("%.2f", v) end,
 }
 
 function ui.row_count()

@@ -78,10 +78,16 @@ function P.send_waves()
   end
 end
 
+P.PANS = { "centre", "alternate" }
+
+-- centre puts every column in the middle. alternate sends odd columns hard
+-- left and even columns hard right.
 function P.send_pans()
-  local s = params:get("pan_spread")
+  local alt = params:get("pan") == 2
   for i = 1, P.N do
-    engine.pan(i - 1, s * (((i - 1) / (P.N - 1)) * 2 - 1))
+    local p = 0
+    if alt then p = (i % 2 == 1) and -1 or 1 end
+    engine.pan(i - 1, p)
   end
 end
 
@@ -191,9 +197,8 @@ function P.add_all()
     controlspec.new(0, 1, "lin", 0.01, 0.2, ""))
   params:set_action("resonance", function(x) engine.resonance(x) end)
 
-  params:add_control("pan_spread", "pan spread",
-    controlspec.new(0, 1, "lin", 0.01, 0.6, ""))
-  params:set_action("pan_spread", function() P.send_pans() end)
+  params:add_option("pan", "pan", P.PANS, 1)
+  params:set_action("pan", function() P.send_pans() end)
 
   params:add_control("level", "level",
     controlspec.new(0, 1, "lin", 0.01, 0.6, ""))

@@ -24,7 +24,7 @@ If you installed this script under an earlier name, delete the `~/dust/code/pend
 
 | Control | Action |
 | --- | --- |
-| `E1` | select row, scrolling for rows 7 to 10 |
+| `E1` | select row, scrolling for rows 7 to 9 |
 | `E2` | edit left param |
 | `E3` | edit right param |
 | `K2` | to the play page |
@@ -55,7 +55,7 @@ Letting go of `K3` releases the head, and it carries on swinging from where you 
 
 These are the global params that shape the waves.
 
-* `bpm` sets the speed. It is the norns clock's tempo, so MIDI clock and Link carry through. `clk`, on the last row, picks the clock source. Set it to `midi` to follow MIDI clock in, or `link` for Link. With an outside source, `bpm` shows the tempo it sets.
+* `bpm` sets the speed. It is the norns clock's tempo, so MIDI clock and Link carry through. Set `source` in PARAMETERS > CLOCK to `midi` to follow MIDI clock in, or `link` for Link. With `midi` or `crow` as the source, `bpm` greys out and shows the tempo coming in.
 * `period`, in the params menu, is how many beats column 1 takes to swing up and back. The default of 4 is one swing per bar of 4/4.
 * `spread` is how much faster each column runs than the one before it, as a percentage. At 0 every column swings together and you hear a 16 note chord. Small values give long slow waves, and larger values break the pattern into fast cross-rhythms. Negative values make the right side of the grid slower.
 * `curve` decides how `spread` accumulates across the grid. `linear` adds the same step per column. `exp` compounds it, so the fast end races away. `centre` speeds up the outside columns and leaves the middle slow, so mirrored pairs swing together. `scatter` gives each column a fixed uneven offset.
@@ -78,7 +78,7 @@ In `pendulum` the realigned notes reach the top a moment apart, so the reunion s
 * `morph` shifts the wave position on each strike and lets it settle back as the note decays.
 * `attack` and `decay` set the AD envelope, which shapes both the level and the filter. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
 * `cutoff`, `filter env`, and `resonance` set the 4-pole low-pass filter. `filter env` opens the cutoff by that many octaves at the envelope's peak, so a low `cutoff` with a positive `filter env` gives a plucked sound. At 1 `resonance` gives a sharp peak at the cutoff without self-oscillating.
-* `pan spread` spreads the columns across the stereo field, left to right.
+* `pan`, in the params menu, places the columns in the stereo field. `centre` puts them all in the middle. `alternate` sends odd columns hard left and even columns hard right.
 * `level` sets the output level.
 
 ### MIDI out
