@@ -14,7 +14,7 @@ local HEAD_TOP, HEAD_BOT = 52, 63
 local VISIBLE = #ROW_Y
 
 ui.ROWS = {
-  { left = { "perd:", "period" }, right = { "sprd:", "spread" } },
+  { left = { "bpm:", "clock_tempo" }, right = { "sprd:", "spread" } },
   { left = { "curv:", "curve" },  right = { "phas:", "phase" } },
   { left = { "drft:", "drift" },  right = { "wndr:", "wander" } },
   { left = { "motn:", "motion" }, right = { "ordr:", "order" } },
@@ -23,6 +23,7 @@ ui.ROWS = {
   { left = { "cutf:", "cutoff" }, right = { "fenv:", "env_cut" } },
   { left = { "atk:", "attack" },  right = { "dec:", "decay" } },
   { left = { "res:", "resonance" }, right = { "lvl:", "level" } },
+  { left = { "clk:", "clock_source" }, right = { "pan:", "pan_spread" } },
 }
 
 local function secs(v)
@@ -34,20 +35,10 @@ local function signed(v)
   return string.format("%+.1f", v)
 end
 
--- beats under one read as note fractions
-local function beats(v)
-  if v < 1 then
-    local d = 1 / v
-    if math.abs(d - math.floor(d + 0.5)) < 0.02 then
-      return "1/" .. math.floor(d + 0.5)
-    end
-  end
-  if v >= 10 then return string.format("%.0fb", v) end
-  return string.format("%.2fb", v)
-end
-
 local RENDER = {
-  period = beats,
+  -- the norns clock's own params; the tempo reads whatever the source sets
+  clock_tempo = function() return string.format("%.0f", clock.get_tempo()) end,
+  clock_source = function() return params:string("clock_source") end,
   spread = function(v) return string.format("%.2f%%", v) end,
   curve = function() return params:string("curve") end,
   phase = function(v) return string.format("%.2f", v) end,
@@ -68,6 +59,7 @@ local RENDER = {
   decay = secs,
   resonance = function(v) return string.format("%.2f", v) end,
   level = function(v) return string.format("%.2f", v) end,
+  pan_spread = function(v) return string.format("%.2f", v) end,
 }
 
 function ui.row_count()

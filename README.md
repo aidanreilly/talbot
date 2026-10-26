@@ -24,7 +24,7 @@ If you installed this script under an earlier name, delete the `~/dust/code/pend
 
 | Control | Action |
 | --- | --- |
-| `E1` | select row, scrolling for rows 7 to 9 |
+| `E1` | select row, scrolling for rows 7 to 10 |
 | `E2` | edit left param |
 | `E3` | edit right param |
 | `K2` | to the play page |
@@ -55,7 +55,8 @@ Letting go of `K3` releases the head, and it carries on swinging from where you 
 
 These are the global params that shape the waves.
 
-* `period` is the time in beats for column 1 to swing up and back. It follows the norns clock, so tempo changes and Link sync carry through.
+* `bpm` sets the speed. It is the norns clock's tempo, so MIDI clock and Link carry through. `clk`, on the last row, picks the clock source. Set it to `midi` to follow MIDI clock in, or `link` for Link. With an outside source, `bpm` shows the tempo it sets.
+* `period`, in the params menu, is how many beats column 1 takes to swing up and back. The default of 4 is one swing per bar of 4/4.
 * `spread` is how much faster each column runs than the one before it, as a percentage. At 0 every column swings together and you hear a 16 note chord. Small values give long slow waves, and larger values break the pattern into fast cross-rhythms. Negative values make the right side of the grid slower.
 * `curve` decides how `spread` accumulates across the grid. `linear` adds the same step per column. `exp` compounds it, so the fast end races away. `centre` speeds up the outside columns and leaves the middle slow, so mirrored pairs swing together. `scatter` gives each column a fixed uneven offset.
 * `phase` staggers the heads, so each column starts behind the one before it. At 1 the stagger covers one whole cycle across the grid and you get a travelling wave from the start. Turning it while the script runs slides the heads apart instead of restarting them.
