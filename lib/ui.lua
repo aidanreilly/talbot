@@ -17,7 +17,7 @@ ui.ROWS = {
   { left = { "per:", "period" },  right = { "sprd:", "spread" } },
   { left = { "curv:", "curve" },  right = { "phs:", "phase" } },
   { left = { "drft:", "drift" },  right = { "wndr:", "wander" } },
-  { left = { "mot:", "motion" },  right = { "ordr:", "order" } },
+  { left = { "motn:", "motion" }, right = { "ordr:", "order" } },
   { left = { "bank:", "bank" },   right = { "wave:", "wave" } },
   { left = { "wspr:", "wave_spread" }, right = { "mrph:", "morph" } },
   { left = { "cutf:", "cutoff" }, right = { "fenv:", "env_cut" } },
