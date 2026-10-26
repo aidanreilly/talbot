@@ -61,10 +61,10 @@ These are the global params that shape the waves.
 * `phase` staggers the heads, so each column starts behind the one before it. At 1 the stagger covers one whole cycle across the grid and you get a travelling wave from the start. Turning it while the script runs slides the heads apart instead of restarting them.
 * `drift` keeps adding phase while the pattern plays, measured per swing of column 1. At the default of 0.02, the stagger grows by one whole cycle across the grid every 50 swings, so the wave turns over slowly. Negative values pull the columns back together. At 0 the pattern repeats exactly.
 * `wander` is how far `spread` drifts either side of its set value, as a percentage. `wander cycle`, in the params menu, sets how many swings of column 1 one full wander takes, for example 64. At 0 `spread` stays put.
-* `motion` sets the swing shape. `pendulum` eases in and out at the top and bottom like a real pendulum. `bounce` moves at constant speed. `rise` climbs from bottom to top and snaps back, like a ramp.
+* `motion` sets the swing shape. `pendulum` eases in and out at the top and bottom like a real pendulum. `rise` climbs from bottom to top and snaps back, like a ramp. `fall` snaps to the top and falls to the bottom, like a ramp run backwards.
 
 With `phase`, `drift`, and `wander` at 0 and a `linear` or `centre` curve, the pattern realigns at the bottom every `100 / spread` swings of column 1, for example every 16 swings at 6.25%. Awkward values stretch that out: at 6.3% it takes 1000 swings. The `exp` curve only comes close, and `scatter` never realigns. Grabbing or nudging a head knocks its column out of step until you drop all the heads again.
-In `pendulum` and `bounce` the realigned notes reach the top a moment apart, so the reunion sounds as a fast strum. In `rise` the top and the bottom are the same instant, so the reunion lands as one chord.
+In `pendulum` the realigned notes reach the top a moment apart, so the reunion sounds as a fast strum. In `rise` and `fall` the top and the bottom are the same instant, so the reunion lands as one chord.
 
 ### Note params
 

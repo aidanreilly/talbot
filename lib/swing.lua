@@ -2,7 +2,7 @@
 
 local swing = {}
 
-swing.MOTIONS = { "pendulum", "bounce", "rise" }
+swing.MOTIONS = { "pendulum", "rise", "fall" }
 swing.CURVES = { "linear", "exp", "centre", "scatter" }
 
 -- slowest a column may run, relative to column 1
@@ -12,11 +12,11 @@ local function frac(x)
   return x - math.floor(x)
 end
 
--- Where the top sits in a cycle. The swinging motions peak half way through,
--- rise peaks at the wrap.
+-- Where the top sits in a cycle. The pendulum peaks half way through, rise
+-- and fall reach the top at the wrap.
 local function top_offset(motion)
-  if motion == 3 then return 0 end
-  return 0.5
+  if motion == 1 then return 0.5 end
+  return 0
 end
 
 -- Fixed per-column scatter, the same on every load so a pset sounds the same
@@ -53,20 +53,21 @@ end
 function swing.height(motion, phase)
   local f = frac(phase)
   if motion == 2 then
-    return f < 0.5 and f * 2 or 2 - f * 2
-  elseif motion == 3 then
     return f
+  elseif motion == 3 then
+    return 1 - f
   end
   return (1 - math.cos(2 * math.pi * f)) / 2
 end
 
--- The rising phase that puts a head at height h.
+-- The phase that puts a head at height h, on the rising side for the
+-- pendulum. Fall's bottom sits just before the wrap, not on it.
 local function inverse(motion, h)
   h = math.max(0, math.min(1, h))
   if motion == 2 then
-    return h / 2
-  elseif motion == 3 then
     return h
+  elseif motion == 3 then
+    return math.min(1 - h, 0.9999)
   end
   return math.acos(1 - 2 * h) / (2 * math.pi)
 end
