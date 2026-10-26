@@ -78,10 +78,10 @@ function P.send_waves()
   end
 end
 
-P.PANS = { "centre", "alternate" }
+P.PANS = { "centre", "l/r" }
 
--- centre puts every column in the middle. alternate sends odd columns hard
--- left and even columns hard right.
+-- centre puts every column in the middle. l/r sends odd columns hard left
+-- and even columns hard right.
 function P.send_pans()
   local alt = params:get("pan") == 2
   for i = 1, P.N do

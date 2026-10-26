@@ -18,7 +18,7 @@ If you installed this script under an earlier name, delete the `~/dust/code/pend
 
 ### Controls
 
-`K2` flips the screen between the params page and the play page. The bottom of each page shows what the keys and encoders do there.
+`K2` flips the screen between the params page and the play page. The bottom of the play page shows what the keys and encoders do there.
 
 **Params page**
 
@@ -29,7 +29,7 @@ If you installed this script under an earlier name, delete the `~/dust/code/pend
 | `E3` | edit right param |
 | `K2` | to the play page |
 | `K3` | run / stop |
-| hold `K3` | drop all heads to the bottom |
+| hold `K3` | drop all heads back to the start of their swing |
 
 **Play page**
 
@@ -48,7 +48,7 @@ Letting go of `K3` releases the head, and it carries on swinging from where you 
 ### Grid
 
 * Press the bottom row of a column to mute or unmute it. A muted column keeps swinging, dimmed, without sounding.
-* Hold any other row to grab that column's head and pin it there. Let go and it carries on rising from where you held it. Grabbing a few heads at different heights is the quickest way to bend the wave by hand.
+* Hold any other row to grab that column's head and pin it there. Let go and it carries on swinging from where you held it. Grabbing a few heads at different heights is the quickest way to bend the wave by hand.
 * Pressing the top row strikes the note straight away, and holds the head at the top until you let go.
 
 ### Motion params
@@ -64,7 +64,7 @@ These are the global params that shape the waves.
 * `wander` is how far `spread` drifts either side of its set value, as a percentage. `wander cycle`, in the params menu, sets how many swings of column 1 one full wander takes, for example 64. At 0 `spread` stays put.
 * `motion` sets the swing shape. `pendulum` eases in and out at the top and bottom like a real pendulum. `rise` climbs from bottom to top and snaps back, like a ramp. `fall` snaps to the top and falls to the bottom, like a ramp run backwards.
 
-With `phase`, `drift`, and `wander` at 0 and a `linear` or `centre` curve, the pattern realigns at the bottom every `100 / spread` swings of column 1, for example every 16 swings at 6.25%. Awkward values stretch that out: at 6.3% it takes 1000 swings. The `exp` curve only comes close, and `scatter` never realigns. Grabbing or nudging a head knocks its column out of step until you drop all the heads again.
+With `phase`, `drift`, and `wander` at 0 and a `linear` or `centre` curve, the pattern realigns at the start of the swing every `100 / spread` swings of column 1, for example every 16 swings at 6.25%. Awkward values stretch that out: at 6.3% it takes 1000 swings. The `exp` curve only comes close, and `scatter` never realigns. Grabbing or nudging a head knocks its column out of step until you drop all the heads again.
 In `pendulum` the realigned notes reach the top a moment apart, so the reunion sounds as a fast strum. In `rise` and `fall` the top and the bottom are the same instant, so the reunion lands as one chord.
 
 ### Note params
@@ -78,7 +78,7 @@ In `pendulum` the realigned notes reach the top a moment apart, so the reunion s
 * `morph` shifts the wave position on each strike and lets it settle back as the note decays.
 * `attack` and `decay` set the AD envelope, which shapes both the level and the filter. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
 * `cutoff`, `filter env`, and `resonance` set the 4-pole low-pass filter. `filter env` opens the cutoff by that many octaves at the envelope's peak, so a low `cutoff` with a positive `filter env` gives a plucked sound. At 1 `resonance` gives a sharp peak at the cutoff without self-oscillating.
-* `pan`, in the params menu, places the columns in the stereo field. `centre` puts them all in the middle. `alternate` sends odd columns hard left and even columns hard right.
+* `pan`, in the params menu, places the columns in the stereo field. `centre` puts them all in the middle. `l/r` sends odd columns hard left and even columns hard right, so every other note comes from the other side.
 * `level` sets the output level.
 
 ### MIDI out
