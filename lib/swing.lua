@@ -5,8 +5,10 @@ local swing = {}
 swing.MOTIONS = { "pendulum", "rise", "fall" }
 swing.CURVES = { "linear", "exp", "centre", "scatter" }
 
--- slowest a column may run, relative to column 1
+-- slowest and fastest a column may run, relative to column 1. The top
+-- stops exp from compounding past anything the motion clock can play.
 local MIN_RATE = 1 / 32
+local MAX_RATE = 256
 
 local function frac(x)
   return x - math.floor(x)
@@ -44,7 +46,7 @@ function swing.rates(n, spread, curve)
     else
       v = 1 + spread * (i - 1)
     end
-    r[i] = math.max(MIN_RATE, v)
+    r[i] = math.min(MAX_RATE, math.max(MIN_RATE, v))
   end
   return r
 end

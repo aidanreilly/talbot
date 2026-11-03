@@ -34,7 +34,10 @@ end
 local RENDER = {
   -- the norns clock's own params; the tempo reads whatever the source sets
   clock_tempo = function() return string.format("%.0f", clock.get_tempo()) end,
-  spread = function(v) return string.format("%.2f%%", v) end,
+  spread = function(v)
+    if v >= 100 then return string.format("%.1f%%", v) end
+    return string.format("%.2f%%", v)
+  end,
   curve = function() return params:string("curve") end,
   phase = function(v) return string.format("%.2f", v) end,
   drift = function(v) return string.format("%+.3f", v) end,

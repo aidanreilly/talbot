@@ -157,8 +157,18 @@ function P.add_all()
   params:set_action("period", function() P.on_rates() end)
 
   params:add_control("spread", "spread",
-    controlspec.new(-10, 25, "lin", 0.05, 6.25, "%"))
+    controlspec.new(-10, 600, "lin", 0.05, 6.25, "%"))
   params:set_action("spread", function() P.on_rates() end)
+  -- fine steps where the waves are slow, coarser ones up towards audio
+  -- rate, so the whole range is a few turns of the encoder
+  local sp = params:lookup_param("spread")
+  function sp:delta(d)
+    local v = self:get()
+    local step = 0.05
+    if v >= 100 then step = 2
+    elseif v >= 25 then step = 0.5 end
+    self:set(v + d * step)
+  end
 
   params:add_option("curve", "curve", swing.CURVES, 1)
   params:set_action("curve", function() P.on_rates() end)
