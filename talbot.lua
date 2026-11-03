@@ -29,8 +29,9 @@
 -- rows above - hold the head
 --   there, top row strikes
 -- hold top left - env page
---   rows pick each column's
---   env, sharpest at bottom
+--   bottom row mutes, rows
+--   above pick each column's
+--   env, sharpest lowest
 --
 -- midi in - note sets root
 
@@ -148,9 +149,16 @@ local function swing_key(x, y, z)
   end
 end
 
--- each column is a slider of presets, the sharpest on the bottom row
+-- the bottom row mutes, the same as the swing page. Above it each column is
+-- a slider of presets, the sharpest just above the mute row.
 local function env_key(x, y, z)
-  local preset = grid_rows + 1 - y
+  if y == grid_rows then
+    if z == 1 then
+      params:set("mute" .. x, P.muted(x) and 1 or 2)
+    end
+    return
+  end
+  local preset = grid_rows - y
   if preset > #P.ENVS then return end
   -- the top left key also flips the page, so it only sets its preset when
   -- a short press lets go
@@ -211,11 +219,14 @@ local function swing_redraw()
   end
 end
 
--- one lit key per column marks its preset, brightening as the column pings
+-- one lit key per column marks its preset, brightening as the column pings.
+-- A muted column lights its mute key, the same as the swing page.
 local function env_redraw()
   for i = 1, N do
-    local lv = P.muted(i) and 2 or (8 + math.floor(flash[i] * 7))
-    g:led(i, grid_rows + 1 - P.env(i), lv)
+    local muted = P.muted(i)
+    if muted then g:led(i, grid_rows, 1) end
+    local lv = muted and 2 or (8 + math.floor(flash[i] * 7))
+    g:led(i, grid_rows - P.env(i), lv)
   end
 end
 

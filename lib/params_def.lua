@@ -92,18 +92,18 @@ function P.send_pans()
 end
 
 -- Envelope presets as { attack, decay } in seconds, ordered from the
--- sharpest pluck to the longest tail. The last two swell in slowly.
+-- sharpest pluck to the longest tail. The last two swell in slowly. Seven
+-- fit on the grid above the mute row.
 P.ENVS = {
   { 0.001, 0.08 },
-  { 0.002, 0.18 },
-  { 0.003, 0.35 },
+  { 0.002, 0.2 },
   { 0.005, 0.6 },
   { 0.01, 1.2 },
   { 0.03, 2.4 },
   { 0.25, 3.5 },
   { 1.0, 6.0 },
 }
-P.ENV_DEFAULT = 4
+P.ENV_DEFAULT = 3
 
 local function secs(v)
   if v < 1 then return string.format("%dms", math.floor(v * 1000 + 0.5)) end

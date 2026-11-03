@@ -65,20 +65,20 @@ The env page shows each column's envelope preset the same way as the grid's enve
 
 **Envelope page**
 
-Each column is a slider of 8 envelope presets, and one lit key shows the column's preset. Press a key to pick that preset. The key brightens each time the column pings.
+The bottom row mutes and unmutes columns, the same as on the main page. Above it, each column is a slider of 7 envelope presets, and one lit key shows the column's preset. Press a key to pick that preset. The key brightens each time the column pings.
 
 | Row | Preset | Attack | Decay |
 | --- | --- | --- | --- |
-| top | 8 | 1 s | 6 s |
-| | 7 | 250 ms | 3.5 s |
-| | 6 | 30 ms | 2.4 s |
-| | 5 | 10 ms | 1.2 s |
-| | 4 (default) | 5 ms | 600 ms |
-| | 3 | 3 ms | 350 ms |
-| | 2 | 2 ms | 180 ms |
-| bottom | 1 | 1 ms | 80 ms |
+| top | 7 | 1 s | 6 s |
+| | 6 | 250 ms | 3.5 s |
+| | 5 | 30 ms | 2.4 s |
+| | 4 | 10 ms | 1.2 s |
+| | 3 (default) | 5 ms | 600 ms |
+| | 2 | 2 ms | 200 ms |
+| | 1 | 1 ms | 80 ms |
+| bottom | mute | | |
 
-The top left key is also the page switch, so on the envelope page a short press sets column 1's preset when you let go. On a 256 grid the presets sit on the bottom 8 rows.
+The top left key is also the page switch, so on the envelope page a short press sets column 1's preset when you let go. On a 256 grid the presets sit on the 7 rows above the mute row.
 
 ### Motion params
 
