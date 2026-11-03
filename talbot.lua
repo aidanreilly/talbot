@@ -13,15 +13,24 @@
 -- ▼ play page ▼
 -- E2 - select column
 -- E3 - nudge its head
--- K2 - to params page
+-- K2 - to env page
 -- K3 - mute / unmute
 -- hold K3 + E3 - move the
 --   head, top strikes
+--
+-- ▼ env page ▼
+-- E2 - select column
+-- E3 - pick its env preset
+-- K2 - to params page
+-- K3 - mute / unmute
 --
 -- ▼ grid ▼
 -- bottom row - mute column
 -- rows above - hold the head
 --   there, top row strikes
+-- hold top left - env page
+--   rows pick each column's
+--   env, sharpest at bottom
 --
 -- midi in - note sets root
 
@@ -49,9 +58,9 @@ local wander_pos = 0
 local wander_off = 0
 local running = true
 local row = 1
--- screen page: "params" or "play"
+-- screen page: "params", "play" or "env"
 local page = "params"
--- column the play page works on
+-- column the play and env pages work on
 local col = 1
 -- K3 hold: long enough to count as a hold, not a tap
 local HOLD_TIME = 0.4
@@ -120,8 +129,13 @@ end
 
 -- grid ---------------------------------------------------------------
 
-function g.key(x, y, z)
-  if x > N or y > grid_rows then return end
+-- grid page: "swing" for the heads, "env" for the envelope presets
+local grid_page = "swing"
+-- holding the top left key flips the grid page
+local corner_clock = nil
+local corner_long = false
+
+local function swing_key(x, y, z)
   if y == grid_rows then
     if z == 1 then
       params:set("mute" .. x, P.muted(x) and 1 or 2)
@@ -131,15 +145,45 @@ function g.key(x, y, z)
   if z == 1 then
     sw:grab(x, (grid_rows - y) / (grid_rows - 1))
     if y == 1 then ping(x) end
-  else
-    sw:release(x)
   end
 end
 
-local function grid_redraw()
-  -- follows a grid plugged in after load; a 256 grid gets longer pendulums
-  if g.rows and g.rows > 0 then grid_rows = math.min(g.rows, 16) end
-  g:all(0)
+-- each column is a slider of presets, the sharpest on the bottom row
+local function env_key(x, y, z)
+  local preset = grid_rows + 1 - y
+  if preset > #P.ENVS then return end
+  -- the top left key also flips the page, so it only sets its preset when
+  -- a short press lets go
+  if x == 1 and y == 1 then
+    if z == 0 and not corner_long then params:set("env1", preset) end
+    return
+  end
+  if z == 1 then params:set("env" .. x, preset) end
+end
+
+function g.key(x, y, z)
+  if x > N or y > grid_rows then return end
+  if x == 1 and y == 1 then
+    if z == 1 then
+      corner_long = false
+      if corner_clock then clock.cancel(corner_clock) end
+      corner_clock = clock.run(function()
+        clock.sleep(HOLD_TIME)
+        corner_clock = nil
+        corner_long = true
+        grid_page = grid_page == "swing" and "env" or "swing"
+      end)
+    elseif corner_clock then
+      clock.cancel(corner_clock)
+      corner_clock = nil
+    end
+  end
+  -- a head lets go whichever page is showing, so none is left stuck
+  if z == 0 then sw:release(x) end
+  if grid_page == "env" then env_key(x, y, z) else swing_key(x, y, z) end
+end
+
+local function swing_redraw()
   for i = 1, N do
     local r = head_row(i)
     local muted = P.muted(i)
@@ -164,9 +208,23 @@ local function grid_redraw()
     elseif muted then lv = 1
     else lv = 10 end
     g:led(i, r, lv)
-
-    flash[i] = flash[i] * FLASH_DECAY
   end
+end
+
+-- one lit key per column marks its preset, brightening as the column pings
+local function env_redraw()
+  for i = 1, N do
+    local lv = P.muted(i) and 2 or (8 + math.floor(flash[i] * 7))
+    g:led(i, grid_rows + 1 - P.env(i), lv)
+  end
+end
+
+local function grid_redraw()
+  -- follows a grid plugged in after load; a 256 grid gets longer pendulums
+  if g.rows and g.rows > 0 then grid_rows = math.min(g.rows, 16) end
+  g:all(0)
+  if grid_page == "env" then env_redraw() else swing_redraw() end
+  for i = 1, N do flash[i] = flash[i] * FLASH_DECAY end
   g:refresh()
 end
 
@@ -272,9 +330,20 @@ local function play_enc(n, delta)
   end
 end
 
+local function env_enc(n, delta)
+  if n == 2 then
+    col = util.clamp(col + delta, 1, N)
+  elseif n == 3 then
+    params:delta("env" .. col, delta)
+  end
+end
+
 function enc(n, delta)
   if page == "play" then
     play_enc(n, delta)
+    return
+  elseif page == "env" then
+    env_enc(n, delta)
     return
   end
   if n == 1 then
@@ -291,19 +360,21 @@ local function k3_hold_start()
   if page == "play" then
     play_h = sw:height(col)
     sw:grab(col, play_h)
-  else
+  elseif page == "params" then
     drift_acc = 0
     drop()
   end
 end
 
 local function k3_tap()
-  if page == "play" then
+  if page == "play" or page == "env" then
     params:set("mute" .. col, P.muted(col) and 1 or 2)
   else
     running = not running
   end
 end
+
+local NEXT_PAGE = { params = "play", play = "env", env = "params" }
 
 function key(n, z)
   if n == 2 then
@@ -315,7 +386,7 @@ function key(n, z)
         clock.cancel(k3_clock)
         k3_clock = nil
       end
-      page = page == "params" and "play" or "params"
+      page = NEXT_PAGE[page]
     end
   elseif n == 3 then
     if z == 1 then
@@ -355,6 +426,14 @@ function redraw()
       col = col, held = k3_held, running = running,
       heights = heights, flash = flash, muted = muted,
       note = note and MusicUtil.note_num_to_name(note, true),
+    })
+    return
+  elseif page == "env" then
+    local envs = {}
+    for i = 1, N do envs[i] = P.env(i) end
+    ui.redraw_env({
+      col = col, running = running, envs = envs, count = #P.ENVS,
+      label = P.env_label(envs[col]), flash = flash, muted = muted,
     })
     return
   end

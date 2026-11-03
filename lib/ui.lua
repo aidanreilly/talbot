@@ -14,21 +14,18 @@ local HEAD_TOP, HEAD_BOT = 52, 63
 local VISIBLE = #ROW_Y
 
 ui.ROWS = {
-  { left = { "bpm:", "clock_tempo" }, right = { "sprd:", "spread" } },
-  { left = { "curv:", "curve" },  right = { "phas:", "phase" } },
-  { left = { "drft:", "drift" },  right = { "wndr:", "wander" } },
-  { left = { "motn:", "motion" }, right = { "ordr:", "order" } },
+  -- motion
+  { left = { "bpm:", "clock_tempo" }, right = { "motn:", "motion" } },
+  { left = { "sprd:", "spread" }, right = { "curv:", "curve" } },
+  { left = { "wndr:", "wander" }, right = { "ordr:", "order" } },
+  { left = { "phas:", "phase" },  right = { "drft:", "drift" } },
+  -- wavetable
   { left = { "bank:", "bank" },   right = { "wave:", "wave" } },
   { left = { "wspr:", "wave_spread" }, right = { "mrph:", "morph" } },
-  { left = { "cutf:", "cutoff" }, right = { "fenv:", "env_cut" } },
-  { left = { "atk:", "attack" },  right = { "dec:", "decay" } },
-  { left = { "res:", "resonance" }, right = { "lvl:", "level" } },
+  -- filter
+  { left = { "cutf:", "cutoff" }, right = { "res:", "resonance" } },
+  { left = { "fenv:", "env_cut" }, right = { "lvl:", "level" } },
 }
-
-local function secs(v)
-  if v < 1 then return string.format("%dms", math.floor(v * 1000 + 0.5)) end
-  return string.format("%.2fs", v)
-end
 
 local function signed(v)
   return string.format("%+.1f", v)
@@ -53,8 +50,6 @@ local RENDER = {
     return string.format("%.0f", v)
   end,
   env_cut = signed,
-  attack = secs,
-  decay = secs,
   resonance = function(v) return string.format("%.2f", v) end,
   level = function(v) return string.format("%.2f", v) end,
 }
@@ -187,6 +182,64 @@ function ui.redraw_play(state)
     -- 128px fits about 25 characters, so the hold lives in the README
     screen.text("E2:col E3:nudge K3:mute")
   end
+
+  screen.update()
+end
+
+-- The env page: each column's preset, the sharpest at the bottom, the same
+-- as the grid's env page.
+local ENV_TOP, ENV_DY = 22, 4
+
+-- state: col, running, envs[i], count (presets), label, flash, muted
+function ui.redraw_env(state)
+  screen.aa(0)
+  screen.line_width(1)
+  screen.clear()
+
+  screen.level(15)
+  screen.move(0, 6)
+  screen.text("col " .. state.col)
+  screen.level(state.muted[state.col] and 15 or 3)
+  screen.move(56, 6)
+  screen.text(state.muted[state.col] and "muted" or "on")
+  screen.level(state.running and 15 or 3)
+  screen.move(127, 6)
+  screen.text_right(state.running and "run" or "stop")
+  screen.level(5)
+  screen.move(0, 14)
+  screen.text("env " .. state.envs[state.col] .. "  " .. state.label)
+
+  local bot = ENV_TOP + (state.count - 1) * ENV_DY
+  for i = 1, #state.envs do
+    local x = PLAY_X0 + (i - 1) * PLAY_DX
+    local sel = i == state.col
+
+    -- a dot for every preset the column could take
+    screen.level(sel and 3 or 1)
+    for k = 1, state.count do
+      screen.pixel(x, bot - (k - 1) * ENV_DY)
+    end
+    screen.fill()
+
+    local y = bot - (state.envs[i] - 1) * ENV_DY
+    local lv
+    if state.muted[i] then lv = 2
+    else lv = 6 + math.floor(state.flash[i] * 9) end
+    if sel then lv = math.max(lv, 12) end
+    screen.level(lv)
+    screen.rect(x - 1, y - 1, 3, 3)
+    screen.fill()
+
+    if sel then
+      screen.level(15)
+      screen.rect(x - 1, bot + 3, 3, 1)
+      screen.fill()
+    end
+  end
+
+  screen.level(3)
+  screen.move(0, 63)
+  screen.text("E2:col E3:env K3:mute")
 
   screen.update()
 end

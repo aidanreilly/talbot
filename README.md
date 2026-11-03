@@ -18,13 +18,13 @@ If you installed this script under an earlier name, delete the `~/dust/code/pend
 
 ### Controls
 
-`K2` flips the screen between the params page and the play page. The bottom of the play page shows what the keys and encoders do there.
+`K2` steps the screen through the params page, the play page, and the env page, then back to the params page. The bottom of the play and env pages shows what the keys and encoders do there.
 
 **Params page**
 
 | Control | Action |
 | --- | --- |
-| `E1` | select row, scrolling for rows 7 to 9 |
+| `E1` | select row, scrolling for rows 7 and 8 |
 | `E2` | edit left param |
 | `E3` | edit right param |
 | `K2` | to the play page |
@@ -39,17 +39,46 @@ The play page draws all 16 pendulums large, so you can play the heads without a 
 | --- | --- |
 | `E2` | select column |
 | `E3` | nudge the column's head along its swing |
-| `K2` | to the params page |
+| `K2` | to the env page |
 | `K3` | mute / unmute the column |
 | hold `K3` + `E3` | grab the head and move it, reaching the top strikes the note |
 
 Letting go of `K3` releases the head, and it carries on swinging from where you left it. Nudging with `E3` shifts one column out of step with the rest without stopping it, which is a quick way to break up a wave by hand.
+
+**Env page**
+
+The env page shows each column's envelope preset the same way as the grid's envelope page, with the sharpest preset at the bottom. The column you select is shared with the play page.
+
+| Control | Action |
+| --- | --- |
+| `E2` | select column |
+| `E3` | step the column's envelope preset up or down |
+| `K2` | to the params page |
+| `K3` | mute / unmute the column |
 
 ### Grid
 
 * Press the bottom row of a column to mute or unmute it. A muted column keeps swinging, dimmed, without sounding.
 * Hold any other row to grab that column's head and pin it there. Let go and it carries on swinging from where you held it. Grabbing a few heads at different heights is the quickest way to bend the wave by hand.
 * Pressing the top row strikes the note straight away, and holds the head at the top until you let go.
+* Hold the top left key to switch to the envelope page, and hold it again to switch back.
+
+**Envelope page**
+
+Each column is a slider of 8 envelope presets, and one lit key shows the column's preset. Press a key to pick that preset. The key brightens each time the column pings.
+
+| Row | Preset | Attack | Decay |
+| --- | --- | --- | --- |
+| top | 8 | 1 s | 6 s |
+| | 7 | 250 ms | 3.5 s |
+| | 6 | 30 ms | 2.4 s |
+| | 5 | 10 ms | 1.2 s |
+| | 4 (default) | 5 ms | 600 ms |
+| | 3 | 3 ms | 350 ms |
+| | 2 | 2 ms | 180 ms |
+| bottom | 1 | 1 ms | 80 ms |
+
+The top left key is also the page switch, so on the envelope page a short press sets column 1's preset when you let go. On a 256 grid the presets sit on the bottom 8 rows.
 
 ### Motion params
 
@@ -76,7 +105,7 @@ In `pendulum` the realigned notes reach the top a moment apart, so the reunion s
 
 * `bank` and `wave` select the wavetable. `wave spread` fans the wave position across the columns, so column 16 sits up to 64 waves away from column 1.
 * `morph` shifts the wave position on each strike and lets it settle back as the note decays.
-* `attack` and `decay` set the AD envelope, which shapes both the level and the filter. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
+* Each column has its own AD envelope, which shapes both its level and its filter. Pick a preset per column from the grid's envelope page, or with `column N env` in the `columns` group of the params menu. A column that pings again before its note has finished retriggers from the current level, so fast columns do not click.
 * `cutoff`, `filter env`, and `resonance` set the 4-pole low-pass filter. `filter env` opens the cutoff by that many octaves at the envelope's peak, so a low `cutoff` with a positive `filter env` gives a plucked sound. At 1 `resonance` gives a sharp peak at the cutoff without self-oscillating.
 * `pan`, in the params menu, places the columns in the stereo field. `centre` puts them all in the middle. `l/r` sends odd columns hard left and even columns hard right, so every other note comes from the other side.
 * `level` sets the output level.

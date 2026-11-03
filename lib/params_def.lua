@@ -91,6 +91,46 @@ function P.send_pans()
   end
 end
 
+-- Envelope presets as { attack, decay } in seconds, ordered from the
+-- sharpest pluck to the longest tail. The last two swell in slowly.
+P.ENVS = {
+  { 0.001, 0.08 },
+  { 0.002, 0.18 },
+  { 0.003, 0.35 },
+  { 0.005, 0.6 },
+  { 0.01, 1.2 },
+  { 0.03, 2.4 },
+  { 0.25, 3.5 },
+  { 1.0, 6.0 },
+}
+P.ENV_DEFAULT = 4
+
+local function secs(v)
+  if v < 1 then return string.format("%dms", math.floor(v * 1000 + 0.5)) end
+  return string.format("%.1fs", v)
+end
+
+function P.env_label(k)
+  local e = P.ENVS[k]
+  return secs(e[1]) .. "/" .. secs(e[2])
+end
+
+local function env_names()
+  local t = {}
+  for k = 1, #P.ENVS do t[k] = k .. ": " .. P.env_label(k) end
+  return t
+end
+
+function P.env(i)
+  return params:get("env" .. i)
+end
+
+function P.send_env(i)
+  local e = P.ENVS[P.env(i)]
+  engine.attack(i - 1, e[1])
+  engine.decay(i - 1, e[2])
+end
+
 -- extra is the wander offset, in the same percent units as spread
 function P.rates(extra)
   return swing.rates(P.N, (params:get("spread") + (extra or 0)) / 100,
@@ -176,15 +216,6 @@ function P.add_all()
     controlspec.new(-32, 32, "lin", 0.1, 6, ""))
   params:set_action("morph", function(x) engine.morph(x) end)
 
-  -- one AD envelope drives both the amp and the filter
-  params:add_control("attack", "attack",
-    controlspec.new(0.001, 2, "exp", 0, 0.005, "s"))
-  params:set_action("attack", function(x) engine.attack(x) end)
-
-  params:add_control("decay", "decay",
-    controlspec.new(0.02, 8, "exp", 0, 0.6, "s"))
-  params:set_action("decay", function(x) engine.decay(x) end)
-
   params:add_control("cutoff", "cutoff",
     controlspec.new(40, 18000, "exp", 0, 800, "hz"))
   params:set_action("cutoff", function(x) engine.cutoff(x) end)
@@ -210,9 +241,14 @@ function P.add_all()
   params:add_control("midi_gate", "gate",
     controlspec.new(0.01, 2, "exp", 0, 0.1, "s"))
 
-  params:add_group("columns", P.N)
+  -- each column's mute and envelope preset, side by side. One AD envelope
+  -- drives both the column's amp and its filter.
+  params:add_group("columns", P.N * 2)
+  local envs = env_names()
   for i = 1, P.N do
     params:add_option("mute" .. i, "column " .. i, { "on", "muted" }, 1)
+    params:add_option("env" .. i, "column " .. i .. " env", envs, P.ENV_DEFAULT)
+    params:set_action("env" .. i, function() P.send_env(i) end)
   end
 end
 

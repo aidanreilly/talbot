@@ -119,7 +119,10 @@ Engine_Talbot : CroneEngine {
 
   addCommands {
     // per-voice
-    [[\hz, \hz], [\wave, \wave], [\pan, \pan]].do({ arg pair;
+    [
+      [\hz, \hz], [\wave, \wave], [\pan, \pan],
+      [\attack, \atk], [\decay, \dec]
+    ].do({ arg pair;
       var argName = pair[1];
       this.addCommand(pair[0], "if", { arg msg;
         var i = msg[1].asInteger;
@@ -136,7 +139,7 @@ Engine_Talbot : CroneEngine {
 
     // global, written to every voice
     [
-      [\attack, \atk], [\decay, \dec], [\morph, \morph],
+      [\morph, \morph],
       [\cutoff, \cutoff], [\env_cut, \envCut], [\resonance, \res]
     ].do({ arg pair;
       var argName = pair[1];
